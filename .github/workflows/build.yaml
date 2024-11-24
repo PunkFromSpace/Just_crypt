@@ -1,0 +1,41 @@
+name: Build macOS Executable
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install py2app cryptography
+
+    - name: Build just_encrypt
+      run: |
+        python setup_encrypt.py py2app
+
+    - name: Build just_decrypt
+      run: |
+        python setup_decrypt.py py2app
+
+    - name: Upload executables
+      uses: actions/upload-artifact@v3
+      with:
+        name: macos-build
+        path: dist/
